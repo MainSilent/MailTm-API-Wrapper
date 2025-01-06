@@ -11,12 +11,11 @@ def password_gen(length=8, chars= string.ascii_letters + string.digits + string.
     return ''.join(random.choice(chars) for _ in range(length))  
 
 class Email(Listen):
-    token = ""
-    domain = ""
-    address = ""
-    session = requests.Session()
-
     def __init__(self):
+        self.token = ""
+        self.domain = ""
+        self.address = ""
+        self.session = requests.Session()
         if not self.domains():
             print("Failed to get domains")
 
@@ -74,7 +73,12 @@ class Email(Listen):
             self.token = response.json()['token']
         except:
             raise Exception("Failed to get token")
-        
+
+    def stop(self):
+        self.listen = False
+        self.session.close()
+        self.thread.join()
+
 
 if __name__ == "__main__":
     def listener(message):
@@ -93,5 +97,5 @@ if __name__ == "__main__":
     test.start(listener)
     print("\nWaiting for new emails...")
 
-    # Stop listening
-    # test.stop()
+    # Stop listening and close session
+    test.stop()
